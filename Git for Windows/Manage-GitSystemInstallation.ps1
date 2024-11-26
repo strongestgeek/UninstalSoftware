@@ -31,7 +31,7 @@
 
 # Define paths and log file for system-wide installation
 $systemInstallPath = "C:\Program Files\Git"
-$gitInstallerPath = ".\Git-2.47.0.2-64-bit.exe"
+$gitInstallerPath = ".\Git-2.47.1-64-bit.exe"
 
 # Function to detect, uninstall, and clean up Git for each user profile
 function Uninstall-UserGit {
