@@ -6,10 +6,10 @@ if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdent
 }
 
 #Info
-$logFilePath = 'C:\Temp\Logs\Intunelogs.txt'
+$logFilePath = 'C:\Windows\Logs\Intunelogs.txt'
 
 # Check if the directory exists, create it if not
-$logDirectory = 'C:\Temp\Logs'
+$logDirectory = 'C:\Windows\Logs'
 if (-not (Test-Path $logDirectory -PathType Container)) {
     New-Item -ItemType Directory -Path $logDirectory | Out-Null
 }
