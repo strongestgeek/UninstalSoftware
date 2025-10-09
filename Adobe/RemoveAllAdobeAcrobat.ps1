@@ -34,46 +34,41 @@ function Uninstall-AdobeReader {
         # Stop Adobe processes
         Stop-AdobeProcesses
         
-        # Parse the uninstall string
-        if ($UninstallString -match '^"(.+?)"(.*)$') {
-            $exePath = $matches[1]
-            $existingArgs = $matches[2].Trim()
-        }
-        elseif ($UninstallString -match '^(\S+)(.*)$') {
-            $exePath = $matches[1]
-            $existingArgs = $matches[2].Trim()
-        }
-        else {
-            Write-Output "Could not parse uninstall string: $UninstallString"
-            return $false
-        }
-        
-        # Build silent uninstall arguments
-        if ($UninstallString -like "*msiexec*") {
-            # MSI-based uninstall
-            $productCode = ($UninstallString -split " ")[1]
-            $arguments = "/x $productCode /qn /norestart"
-            $process = Start-Process -FilePath "msiexec.exe" -ArgumentList $arguments -Wait -PassThru -NoNewWindow
-        }
-        else {
-            # EXE-based uninstall - use Adobe's silent switches
-            $arguments = "/sAll /rs /msi REBOOT=ReallySuppress /qn /norestart"
+        # Extract the product code from the uninstall string
+        if ($UninstallString -match '\{[A-F0-9\-]+\}') {
+            $productCode = $matches[0]
+            Write-Output "Found product code: $productCode"
             
-            if (-not (Test-Path $exePath)) {
-                Write-Output "Uninstaller not found: $exePath"
+            # Use proper MSI uninstall with silent switches
+            $arguments = "/x `"$productCode`" /qn /norestart REBOOT=ReallySuppress"
+            
+            Write-Output "Executing: msiexec.exe $arguments"
+            $process = Start-Process -FilePath "msiexec.exe" -ArgumentList $arguments -Wait -PassThru -NoNewWindow -WindowStyle Hidden
+            
+            # Check exit code
+            if ($process.ExitCode -eq 0 -or $process.ExitCode -eq 3010 -or $process.ExitCode -eq 1605) {
+                # 0 = success, 3010 = success but reboot required, 1605 = product not found (already uninstalled)
+                Write-Output "Successfully uninstalled: $DisplayName (Version: $Version) - Exit Code: $($process.ExitCode)"
+                return $true
+            }
+            else {
+                Write-Output "Uninstall returned exit code $($process.ExitCode) for: $DisplayName"
+                
+                # If standard uninstall fails, try alternate method
+                Write-Output "Attempting alternate uninstall method..."
+                $arguments2 = "/x `"$productCode`" /quiet /norestart"
+                $process2 = Start-Process -FilePath "msiexec.exe" -ArgumentList $arguments2 -Wait -PassThru -NoNewWindow -WindowStyle Hidden
+                
+                if ($process2.ExitCode -eq 0 -or $process2.ExitCode -eq 3010 -or $process2.ExitCode -eq 1605) {
+                    Write-Output "Alternate method succeeded - Exit Code: $($process2.ExitCode)"
+                    return $true
+                }
+                
                 return $false
             }
-            
-            $process = Start-Process -FilePath $exePath -ArgumentList $arguments -Wait -PassThru -NoNewWindow
-        }
-        
-        # Check exit code
-        if ($process.ExitCode -eq 0 -or $process.ExitCode -eq 3010) {
-            Write-Output "Successfully uninstalled: $DisplayName (Version: $Version)"
-            return $true
         }
         else {
-            Write-Output "Uninstall returned exit code $($process.ExitCode) for: $DisplayName"
+            Write-Output "Could not extract product code from uninstall string: $UninstallString"
             return $false
         }
     }
@@ -133,6 +128,8 @@ try {
         Write-Output "No old versions found to uninstall"
         exit 0
     }
+    
+    Write-Output "Found $($appsToUninstall.Count) old version(s) to uninstall"
     
     foreach ($app in $appsToUninstall) {
         Write-Output "Attempting to uninstall: $($app.DisplayName) - Version: $($app.Version)"
