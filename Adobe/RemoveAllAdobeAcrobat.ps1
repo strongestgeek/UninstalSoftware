@@ -43,7 +43,7 @@ function Uninstall-AdobeReader {
             $arguments = "/x `"$productCode`" /qn /norestart REBOOT=ReallySuppress"
             
             Write-Output "Executing: msiexec.exe $arguments"
-            $process = Start-Process -FilePath "msiexec.exe" -ArgumentList $arguments -Wait -PassThru -NoNewWindow -WindowStyle Hidden
+            $process = Start-Process -FilePath "msiexec.exe" -ArgumentList $arguments -Wait -PassThru -NoNewWindow
             
             # Check exit code
             if ($process.ExitCode -eq 0 -or $process.ExitCode -eq 3010 -or $process.ExitCode -eq 1605) {
@@ -57,7 +57,7 @@ function Uninstall-AdobeReader {
                 # If standard uninstall fails, try alternate method
                 Write-Output "Attempting alternate uninstall method..."
                 $arguments2 = "/x `"$productCode`" /quiet /norestart"
-                $process2 = Start-Process -FilePath "msiexec.exe" -ArgumentList $arguments2 -Wait -PassThru -NoNewWindow -WindowStyle Hidden
+                $process2 = Start-Process -FilePath "msiexec.exe" -ArgumentList $arguments2 -Wait -PassThru -NoNewWindow
                 
                 if ($process2.ExitCode -eq 0 -or $process2.ExitCode -eq 3010 -or $process2.ExitCode -eq 1605) {
                     Write-Output "Alternate method succeeded - Exit Code: $($process2.ExitCode)"
@@ -93,7 +93,7 @@ try {
         $apps = Get-ItemProperty $path -ErrorAction SilentlyContinue
         
         foreach ($app in $apps) {
-            if ($app.DisplayName -like "*Adobe Acrobat Reader DC*" -or $app.DisplayName -like "*Adobe Acrobat Reader*") {
+            if ($app.DisplayName -like "*Adobe Acrobat*" -or $app.DisplayName -like "*Adobe Acrobat Reader*") {
                 
                 $versionString = $app.DisplayVersion
                 $uninstallString = $app.UninstallString
@@ -149,7 +149,7 @@ try {
         $apps = Get-ItemProperty $path -ErrorAction SilentlyContinue
         
         foreach ($app in $apps) {
-            if ($app.DisplayName -like "*Adobe Acrobat Reader DC*" -or $app.DisplayName -like "*Adobe Acrobat Reader*") {
+            if ($app.DisplayName -like "*Adobe Acrobat*" -or $app.DisplayName -like "*Adobe Acrobat Reader*") {
                 
                 $versionString = $app.DisplayVersion
                 
