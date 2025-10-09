@@ -24,7 +24,7 @@ try {
         $apps = Get-ItemProperty $path -ErrorAction SilentlyContinue
         
         foreach ($app in $apps) {
-            if ($app.DisplayName -like "*Adobe Acrobat Reader DC*" -or $app.DisplayName -like "*Adobe Acrobat Reader*") {
+            if ($app.DisplayName -like "*Adobe Acrobat*" -or $app.DisplayName -like "*Adobe Acrobat Reader*") {
                 
                 # Extract version number
                 $versionString = $app.DisplayVersion
