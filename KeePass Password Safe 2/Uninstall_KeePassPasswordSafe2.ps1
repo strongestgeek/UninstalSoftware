@@ -1,10 +1,8 @@
-# "C:\Program Files (x86)\KeePass Password Safe 2\unins000.exe"
 # KeePass EXE Version Remediation Script for Intune
 # Exit 0 = Success
 # Exit 1 = Failure
 
 $uninstallerPath = "C:\Program Files (x86)\KeePass Password Safe 2\unins000.exe"
-$keepassExePath = "C:\Program Files (x86)\KeePass Password Safe 2\KeePass.exe"
 
 # Verify uninstaller exists
 if (-not (Test-Path $uninstallerPath)) {
