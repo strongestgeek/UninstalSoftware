@@ -1,4 +1,4 @@
-# Function to detect and uninstall Firefox for each user profile
+# Function to detect Firefox for each user profile
 function Get-UserFirefox {
     # Get all user profile directories from C:\Users
     $userProfiles = Get-ChildItem -Path "C:\Users" -Directory
@@ -16,5 +16,6 @@ function Get-UserFirefox {
         }
     }
 }
+
 
 Get-UserFirefox 
