@@ -9,13 +9,14 @@ function Get-UserFirefox {
         if (Test-Path -Path $FoxExecutable) {
             # Look for any uninstaller file"
             Write-Host "Local User Firefox found."
-            Exit 0
+            Exit 1
         } else {
             Write-Host "Local User Firefox not found."
-            Exit 1
+            Exit 0
         }
     }
 }
 
 
 Get-UserFirefox 
+
