@@ -1,0 +1,1 @@
+Get-AppxPackage -AllUsers *com.tinyspeck.slackdesktop* | Remove-AppxPackage -AllUsers -ErrorAction SilentlyContinue
