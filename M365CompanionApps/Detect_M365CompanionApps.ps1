@@ -1,13 +1,10 @@
-try {
-    $app = Get-AppxPackage -AllUsers -Name "Microsoft.M365Companions" -ErrorAction SilentlyContinue
-    if ($null -eq $app) {
-        Write-Host "Microsoft.M365Companions not found on the device."
-        exit 0
-    } else {
-        Write-Host "Microsoft.M365Companions found on the device."
-        exit 1
-    }
-} catch {
-    Write-Host "Error detecting Microsoft.M365Companions: $_"
-    exit 1
+$App = Get-AppxPackage -AllUsers -Name "Microsoft.M365Companions" -ErrorAction SilentlyContinue
+$Provisioned = Get-AppxProvisionedPackage -Online | Where-Object { $_.DisplayName -eq "Microsoft.M365Companions" }
+
+if ($null -ne $App -or $null -ne $Provisioned) {
+    Write-Host "Microsoft 365 Companions found."
+    exit 1 # Exit 1 tells Intune to run the Remediation script
+} else {
+    Write-Host "Not found."
+    exit 0 # Exit 0 tells Intune the device is "Healthy"
 }
